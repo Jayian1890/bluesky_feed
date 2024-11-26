@@ -4,12 +4,13 @@
 
 #pragma once
 
+#include "../Settings.cpp"
 #include "../HttpsClient.cpp"
 
 
 class getProfile : public JSON {
 private:
-    std::string _host = "https://public.api.bsky.app";
+    std::string _host = Settings::getInstance().get("public_api");
     std::string _endpoint = "/xrpc/app.bsky.actor.getProfile";
     std::string _bearerToken;
     std::string _actor;

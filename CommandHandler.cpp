@@ -5,15 +5,14 @@
 #pragma once
 
 #include <iostream>
-#include <sstream>
 #include <string>
-#include <map>
 #include <vector>
 #include "actor/getProfile.cpp"
-#include "Settings.cpp"
 
 
 class CommandHandler {
+    Settings& settings = Settings::getInstance();
+
 public:
     static void executeCommand(const std::string& command, const std::vector<std::string>& args) {
         if (command == "parse") {
