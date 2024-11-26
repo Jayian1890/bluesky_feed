@@ -2,6 +2,8 @@
 // Created by Jared T on 11/26/24.
 //
 
+#pragma once
+
 #include <iostream>
 #include <string>
 #include <map>

@@ -8,6 +8,8 @@ add_executable(bluesky_feed
         HttpsClient.cpp
         json.cpp
         actor/getProfile.cpp
+        Settings.cpp
+        CommandHandler.cpp
 )
 
 find_package(CURL REQUIRED)
