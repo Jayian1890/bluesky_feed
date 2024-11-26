@@ -22,7 +22,7 @@ public:
         size_t valueStart = 0;
         bool inQuotes = false;
         bool parsingKey = true;
-        std::string key, value;
+        std::string key;
 
         while (pos < jsonString.length()) {
             char currentChar = jsonString[pos];
@@ -37,7 +37,7 @@ public:
                     if (parsingKey) {
                         key = jsonString.substr(keyStart, pos - keyStart);
                     } else {
-                        value = jsonString.substr(valueStart, pos - valueStart);
+                        std::string value = jsonString.substr(valueStart, pos - valueStart);
                         data[key] = value;
                         keys.push_back(key);
                     }

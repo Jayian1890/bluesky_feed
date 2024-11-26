@@ -18,8 +18,6 @@ std::pair<std::string, std::vector<std::string>> parseInput(const std::string& i
 }
 
 int main() {
-    Settings& settings = Settings::getInstance();
-
     std::string input;
 
     std::cout << "Welcome to IP-Feed Console!" << std::endl;
