@@ -10,10 +10,9 @@
 
 #include <map>
 #include <string>
-#include "../tools/json.h"
+#include "../tools/JSON.h"
 
-class httpsClient {
-private:
+class HTTPSClient {
     std::string host;
     std::string endpoint;
     std::string bearerToken;
@@ -27,10 +26,10 @@ private:
 
 public:
     // Singleton instance getter
-    static httpsClient* getInstance();
+    static HTTPSClient* getInstance();
 
     // Constructor
-    httpsClient();
+    HTTPSClient();
 
     // Setters
     void setHost(const std::string& h);

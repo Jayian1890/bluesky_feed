@@ -17,7 +17,7 @@
 #include <unistd.h>
 #endif
 
-#include "../tools/json.h"
+#include "../tools/JSON.h"
 
 class Settings {
     std::string filePath = "settings.config";

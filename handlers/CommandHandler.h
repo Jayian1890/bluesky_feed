@@ -11,9 +11,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "../config/settings.h"
+#include "../config/Settings.h"
 
-class commandHandler {
+class CommandHandler {
     Settings& settings = Settings::getInstance(); // Reference to Settings instance
 
 public:

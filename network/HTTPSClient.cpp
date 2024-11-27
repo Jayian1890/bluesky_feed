@@ -5,34 +5,34 @@
 
 #include <stdexcept>
 #include <curl/curl.h>
-#include "httpsClient.h"
+#include "HTTPSClient.h"
 
 // Static callback to store response data
-size_t httpsClient::writeCallback(void* contents, const size_t size, const size_t nmemb, std::string* response) {
+size_t HTTPSClient::writeCallback(void* contents, const size_t size, const size_t nmemb, std::string* response) {
     const size_t totalSize = size * nmemb;
     response->append(static_cast<char*>(contents), totalSize);
     return totalSize;
 }
 
 // Constructor
-httpsClient::httpsClient() = default;
+HTTPSClient::HTTPSClient() = default;
 
 // Singleton instance getter
-httpsClient* httpsClient::getInstance() {
-    static httpsClient instance;
+HTTPSClient* HTTPSClient::getInstance() {
+    static HTTPSClient instance;
     return &instance;
 }
 
 // Setters
-void httpsClient::setHost(const std::string& h) { host = h; }
-void httpsClient::setEndpoint(const std::string& ep) { endpoint = ep; }
-void httpsClient::setBearerToken(const std::string& token) { bearerToken = token; }
-void httpsClient::addQueryParam(const std::string& key, const std::string& value) {
+void HTTPSClient::setHost(const std::string& h) { host = h; }
+void HTTPSClient::setEndpoint(const std::string& ep) { endpoint = ep; }
+void HTTPSClient::setBearerToken(const std::string& token) { bearerToken = token; }
+void HTTPSClient::addQueryParam(const std::string& key, const std::string& value) {
     queryParams[key] = value;
 }
 
 // Construct the full URL including query parameters
-std::string httpsClient::constructUrl() const {
+std::string HTTPSClient::constructUrl() const {
     std::string url = host + endpoint;
     if (!queryParams.empty()) {
         url += "?";
@@ -47,7 +47,7 @@ std::string httpsClient::constructUrl() const {
 }
 
 // Perform a GET request and return JSON
-JSON httpsClient::get() const {
+JSON HTTPSClient::get() const {
     CURL* curl = curl_easy_init();
     if (!curl) {
         throw std::runtime_error("Failed to initialize libcurl");

@@ -4,10 +4,10 @@
 //
 
 #include "../actor/getProfile.cpp"
-#include "commandHandler.h"
+#include "CommandHandler.h"
 
 // Execute a command
-void commandHandler::executeCommand(const std::string& command, const std::vector<std::string>& args) {
+void CommandHandler::executeCommand(const std::string& command, const std::vector<std::string>& args) {
     if (command == "parse") {
         if (args.empty()) {
             std::cout << "Error: parse requires a JSON string as argument." << std::endl;
@@ -29,7 +29,7 @@ void commandHandler::executeCommand(const std::string& command, const std::vecto
 }
 
 // Print help message
-void commandHandler::printHelp() {
+void CommandHandler::printHelp() {
     std::cout << "Available commands:" << std::endl;
     std::cout << "  getprofile <name>     - Returns details for the specified profile" << std::endl;
     std::cout << "  help                  - Shows this help message" << std::endl;

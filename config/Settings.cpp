@@ -6,7 +6,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <vector>
-#include "settings.h"
+#include "Settings.h"
 
 Settings::Settings() {
     std::ifstream file(filePath);

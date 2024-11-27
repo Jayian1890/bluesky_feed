@@ -7,12 +7,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(bluesky_feed
     main.cpp
-        network/HttpsClient.cpp
-        tools/json.cpp
         actor/getProfile.cpp
-        config/settings.cpp
-        handlers/commandHandler.cpp
-        handlers/commandHandler.h
+        tools/JSON.cpp
+        config/Settings.cpp
+        network/HTTPSClient.cpp
+        handlers/CommandHandler.cpp
 )
 
 find_package(CURL REQUIRED)

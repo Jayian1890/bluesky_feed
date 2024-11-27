@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "../config/settings.h"
-#include "../network/httpsClient.h"
+#include "../config/Settings.h"
+#include "../network/HTTPSClient.h"
 
 class getProfile : public JSON {
     std::string _host = Settings::getInstance().get("public_api");
@@ -25,7 +25,7 @@ public:
     }
 
     void fetch() {
-        httpsClient client;
+        HTTPSClient client;
         client.setHost(_host);
         client.setEndpoint(_endpoint);
         client.setBearerToken(_bearerToken);
