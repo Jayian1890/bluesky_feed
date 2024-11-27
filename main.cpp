@@ -5,7 +5,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "handlers/commandHandler.cpp"
+#include "handlers/commandHandler.h"
 
 // Helper function to split input into command and arguments
 std::pair<std::string, std::vector<std::string>> parseInput(const std::string& input) {

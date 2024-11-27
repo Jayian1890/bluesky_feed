@@ -8,10 +8,9 @@
 
 #pragma once
 
-#include <iostream>
 #include <map>
 #include <string>
-#include "../tools/JSON.h"
+#include "../tools/json.h"
 
 class httpsClient {
 private:
