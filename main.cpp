@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include "handlers/CommandHandler.h"
+#include "config/Settings.h"
 
 // Helper function to split input into command and arguments
 std::pair<std::string, std::vector<std::string>> parseInput(const std::string& input) {
@@ -23,11 +24,12 @@ std::pair<std::string, std::vector<std::string>> parseInput(const std::string& i
 }
 
 int main() {
-    std::string input;
+    auto settings = Settings::getInstance();
 
-    std::cout << "Welcome to IP-Feed Console!" << std::endl;
+    std::cout << "Welcome to Bluesky Feed Console!" << std::endl;
     std::cout << "Type 'help' for a list of commands." << std::endl;
 
+    std::string input;
     while (true) {
         std::cout << "> ";
         std::getline(std::cin, input);

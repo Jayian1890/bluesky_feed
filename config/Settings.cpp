@@ -17,10 +17,6 @@ Settings::Settings() {
     std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     if (content.empty()) {
         createDefaultSettings();
-        file.open(filePath);
-        content = R"({
-"public_api": "https://public.api.bsky.app"
-})";
     }
     file.close();
     json.parse(content);
@@ -42,18 +38,35 @@ std::string Settings::getAbsolutePath(const std::string& relativePath) {
 #endif
 }
 
-void Settings::createDefaultSettings() const {
-    std::ofstream file(filePath);
+void Settings::loadSettings() {
+    std::ifstream file(filePath);
     if (!file.is_open()) {
-        throw std::runtime_error("Failed to create settings file: " + filePath);
+        throw std::runtime_error("Failed to open settings file: " + filePath);
     }
-    file << R"({
-        "public_api": "https://public.api.bsky.app"
-    })";
+
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    if (content.empty()) {
+        createDefaultSettings();
+        file.close();
+        file.open(filePath);
+        content = json.generate();
+    }
     file.close();
+    json.parse(content);
 }
 
-std::string Settings::get(const std::string& key) const {
+void Settings::createDefaultSettings() {
+    set("client_id", "");
+    set("client_secret", "");
+    set("accessToken", "");
+    set("public_api", "https://public.api.bsky.app");
+    set("auth_endpoint", "https://api.bsky.app/oauth/authorize");
+    set("token_endpoint", "https://api.bsky.app/oauth/token");
+    set("redirect_uri", "");
+}
+
+std::string Settings::get(const std::string& key) {
+    loadSettings();
     return json.get(key);
 }
 

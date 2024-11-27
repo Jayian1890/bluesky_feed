@@ -12,6 +12,7 @@ add_executable(bluesky_feed
         config/Settings.cpp
         network/HTTPSClient.cpp
         handlers/CommandHandler.cpp
+        network/OAuthClient.h
 )
 
 find_package(CURL REQUIRED)

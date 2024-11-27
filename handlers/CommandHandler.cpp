@@ -4,6 +4,7 @@
 //
 
 #include "../actor/getProfile.cpp"
+#include "../network/OAuthClient.h"
 #include "CommandHandler.h"
 
 // Execute a command
@@ -21,6 +22,8 @@ void CommandHandler::executeCommand(const std::string& command, const std::vecto
         }
         const getProfile profile(args[0]);
         std::cout << profile.generate() << std::endl;
+    } else if (command == "oauth") {
+        OAuthClient::authenticate();
     } else if (command == "help") {
         printHelp();
     } else {
@@ -32,6 +35,7 @@ void CommandHandler::executeCommand(const std::string& command, const std::vecto
 void CommandHandler::printHelp() {
     std::cout << "Available commands:" << std::endl;
     std::cout << "  getprofile <name>     - Returns details for the specified profile" << std::endl;
+    std::cout << "  oauth                 - Authenticates the OAuth client with Bluesky API" << std::endl;
     std::cout << "  help                  - Shows this help message" << std::endl;
     std::cout << "  exit                  - Exit the program" << std::endl;
 }

@@ -29,8 +29,11 @@ class Settings {
     // Helper to get absolute path
     static std::string getAbsolutePath(const std::string& relativePath);
 
+    // Method to load and parse the settings file into the JSON object
+    void loadSettings();
+
     // Create default settings if the file does not exist or is empty
-    void createDefaultSettings() const;
+    void createDefaultSettings();
 
     // Save the current settings to file
     void saveSettings() const;
@@ -40,7 +43,7 @@ public:
     static Settings& getInstance();
 
     // Get a value by key
-    [[nodiscard]] std::string get(const std::string& key) const;
+    std::string get(const std::string& key);
 
     // Check if a key exists
     [[nodiscard]] bool hasKey(const std::string& key) const;

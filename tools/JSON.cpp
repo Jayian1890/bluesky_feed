@@ -3,7 +3,7 @@
 // Copyright (c) 2024 Interlaced Pixel. All rights reserved.
 //
 
-#include "json.h"
+#include "JSON.h"
 #include <sstream>
 
 void JSON::parse(const std::string& jsonString) {
@@ -63,8 +63,12 @@ std::string JSON::get(const std::string& key) const {
 }
 
 void JSON::set(const std::string& key, const std::string& value) {
-    data[key] = value;
-    keys.push_back(key);
+    if (data.find(key) != data.end()) {
+        data[key] = value;
+    } else {
+        data[key] = value;
+        keys.push_back(key);
+    }
 }
 
 std::vector<std::string> JSON::getKeys() const {
@@ -73,18 +77,33 @@ std::vector<std::string> JSON::getKeys() const {
 
 std::string JSON::generate() const {
     std::stringstream ss;
-    ss << "{";
+    int indentLevel = 0;
+
+    auto addIndent = [&ss, &indentLevel]() {
+        for (int i = 0; i < indentLevel; ++i) {
+            ss << "    "; // 4 spaces per indent
+        }
+    };
+
+    ss << "{\n";
+    ++indentLevel;
 
     for (size_t i = 0; i < keys.size(); ++i) {
         const std::string& key = keys[i];
         const std::string& value = data.at(key);
 
+        addIndent();
         ss << "\"" << key << "\": \"" << value << "\"";
+
         if (i != keys.size() - 1) {
             ss << ",";
         }
+        ss << "\n";
     }
 
+    --indentLevel;
+    addIndent();
     ss << "}";
+
     return ss.str();
 }
