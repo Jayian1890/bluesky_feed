@@ -1,10 +1,11 @@
 //
-// Created by Jared T on 11/24/24.
+// Created by jayian on 11/26/24.
+// Copyright (c) 2024 Interlaced Pixel. All rights reserved.
 //
 
 #include <iostream>
 #include <string>
-#include "../HttpsClient.cpp"
+#include "../network/httpsClient.h"
 
 class getPreferences : public JSON {
 private:
@@ -17,7 +18,7 @@ public:
         : preferencesHost(host), preferencesEndpoint(endpoint), bearerToken(token) {}
 
     void fetch() {
-        HttpsClient client;
+        httpsClient client;
         client.setHost(preferencesHost);
         client.setEndpoint(preferencesEndpoint);
         client.setBearerToken(bearerToken);

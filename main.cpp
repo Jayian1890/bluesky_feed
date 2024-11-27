@@ -1,6 +1,11 @@
-#include <iostream>
-#include "CommandHandler.cpp"
+//
+// Created by jayian on 11/26/24.
+// Copyright (c) 2024 Interlaced Pixel. All rights reserved.
+//
 
+#include <iostream>
+#include <sstream>
+#include "handlers/commandHandler.cpp"
 
 // Helper function to split input into command and arguments
 std::pair<std::string, std::vector<std::string>> parseInput(const std::string& input) {
@@ -25,16 +30,16 @@ int main() {
 
     while (true) {
         std::cout << "> ";
-        std::getline(std::cin, input); // Get user input
+        std::getline(std::cin, input);
 
-        auto [command, args] = parseInput(input); // Split input into command and arguments
+        auto [command, args] = parseInput(input);
 
         if (command == "exit") {
             std::cout << "Goodbye!" << std::endl;
             break;
         }
 
-        CommandHandler::executeCommand(command, args); // Handle the command
+        commandHandler::executeCommand(command, args);
     }
 
     return 0;

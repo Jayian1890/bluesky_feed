@@ -1,15 +1,14 @@
 //
-// Created by Jared T on 11/26/24.
+// Created by jayian on 11/26/24.
+// Copyright (c) 2024 Interlaced Pixel. All rights reserved.
 //
 
 #pragma once
 
-#include "../Settings.cpp"
-#include "../HttpsClient.cpp"
-
+#include "../config/settings.h"
+#include "../network/httpsClient.h"
 
 class getProfile : public JSON {
-private:
     std::string _host = Settings::getInstance().get("public_api");
     std::string _endpoint = "/xrpc/app.bsky.actor.getProfile";
     std::string _bearerToken;
@@ -26,7 +25,7 @@ public:
     }
 
     void fetch() {
-        HttpsClient client;
+        httpsClient client;
         client.setHost(_host);
         client.setEndpoint(_endpoint);
         client.setBearerToken(_bearerToken);
