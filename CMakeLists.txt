@@ -9,10 +9,16 @@ add_executable(bluesky_feed
     main.cpp
         actor/getProfile.cpp
         tools/JSON.cpp
+        tools/JSON.h
         config/Settings.cpp
-        network/HTTPSClient.cpp
+        config/Settings.h
+        network/https_client.cpp
+        network/https_client.h
         handlers/CommandHandler.cpp
+        handlers/CommandHandler.h
         network/OAuthClient.h
+        tools/url_encoder.cpp
+        tools/url_encoder.h
 )
 
 find_package(CURL REQUIRED)

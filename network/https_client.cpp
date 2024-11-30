@@ -5,7 +5,7 @@
 
 #include <stdexcept>
 #include <curl/curl.h>
-#include "HTTPSClient.h"
+#include "https_client.h"
 
 // Static callback to store response data
 size_t HTTPSClient::writeCallback(void* contents, const size_t size, const size_t nmemb, std::string* response) {

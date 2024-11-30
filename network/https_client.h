@@ -10,7 +10,7 @@
 
 #include <map>
 #include <string>
-#include "../tools/JSON.h"
+#include "../tools/json.h"
 
 class HTTPSClient {
     std::string host;

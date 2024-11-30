@@ -12,8 +12,9 @@
 #include <string>
 #include <map>
 #include <curl/curl.h>
-#include "../tools/JSON.h"
+#include "../tools/json.h"
 #include "../config/Settings.h"
+#include "../tools/url_encoder.h"
 
 class OAuthClient {
     std::string clientId;
@@ -78,7 +79,7 @@ public:
     // Get authorization URL
     [[nodiscard]] std::string getAuthUrl(const std::string& scope, const std::string& state) const {
         return authEndpoint + "?response_type=code&client_id=" + clientId +
-               "&redirect_uri=" + redirectUri + "&scope=" + scope + "&state=" + state;
+               "&redirect_uri=" + redirectUri + "&scope=" + URLEncoder::encodeComponent(scope) + "&state=" + state;
     }
 
     // Exchange authorization code for an access token
@@ -107,15 +108,61 @@ public:
         return accessToken;
     }
 
+    static void createClientMetadata() {
+        auto& metadataSettings = Settings::getInstance("client-metadata.json");
+
+        std::cout << "[OAuthClient] Creating client-metadata..." << std::endl;
+
+        struct MetadataInput {
+            std::string description;
+            std::string key;
+        };
+
+        const std::vector<MetadataInput> inputs = {
+            {"A client ID must be a URL pointing to a JSON file which contains your client metadata.", "client_id"},
+            {"The name of your client. Will be displayed to the user during the authentication process.", "client_name"},
+            {"The URL of your client. Whether or not this value is actually displayed/used is up to the Authorization Server.", "client_uri"},
+            {"The URL of your client's logo. Should be displayed to the user during the authentication process. Whether your logo is actually displayed during the authentication process or not is up to the Authorization Server.", "logo_uri"},
+            {"The URL of your client's terms of service. Will be displayed to the user during the authentication process.", "tos_uri"},
+            {"The URL of your client's privacy policy. Will be displayed to the user during the authentication process.", "policy_uri"},
+            {"An array of URLs that will be used as the redirect URIs for the OAuth flow. This should typically contain a single URL that points to a page on your SPA that will handle the OAuth response. This URL must be HTTPS.", "redirect_uris"}
+        };
+
+        for (const auto&[description, key] : inputs) {
+            if (metadataSettings.hasKey(key)) {
+                std::string currentValue = metadataSettings.get(key);
+                std::cout << "Current value for " << key << ": " << currentValue << std::endl;
+                std::cout << "Would you like to update it? (y/n): ";
+                std::string response;
+                std::getline(std::cin, response);
+
+                if (response == "y" || response == "Y") {
+                    const auto newValue = Settings::promptAndSet(description, key, metadataSettings);
+                    if (key == "client_id") {
+                        Settings::getInstance().set("client_id", newValue);
+                    }
+                } else {
+                    std::cout << "Keeping the current value for " << key << "." << std::endl;
+                }
+            } else {
+                const auto newValue = Settings::promptAndSet(description, key, metadataSettings);
+                if (key == "client_id") {
+                    Settings::getInstance().set("client_id", newValue);
+                }
+            }
+        }
+    }
+
+
     static void authenticate() {
         try {
             auto& settings = Settings::getInstance();
 
-            const std::string clientId = settings.get("client_id");
-            const std::string clientSecret = settings.get("client_secret");
-            const std::string authEndpoint = settings.get("auth_endpoint");
-            const std::string tokenEndpoint = settings.get("token_endpoint");
-            const std::string redirectUri = settings.get("redirect_uri");
+            auto clientId = settings.get("client_id");
+            auto clientSecret = settings.get("client_secret");
+            auto authEndpoint = settings.get("auth_endpoint");
+            auto tokenEndpoint = settings.get("token_endpoint");
+            auto redirectUri = settings.get("redirect_uri");
 
             OAuthClient oauth(clientId, clientSecret, authEndpoint, tokenEndpoint, redirectUri);
 

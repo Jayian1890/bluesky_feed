@@ -6,7 +6,7 @@
 #pragma once
 
 #include "../config/Settings.h"
-#include "../network/HTTPSClient.h"
+#include "../network/https_client.h"
 
 class getProfile : public JSON {
     std::string _host = Settings::getInstance().get("public_api");

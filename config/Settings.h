@@ -17,39 +17,36 @@
 #include <unistd.h>
 #endif
 
-#include "../tools/JSON.h"
+#pragma once
+
+#include <fstream>
+#include "../tools/json.h"
 
 class Settings {
-    std::string filePath = "settings.config";
-    JSON json{};
+    JSON json;
+    const std::string& filePath;
+    std::fstream fileStream;
 
-    // Private constructor
-    Settings();
-
-    // Helper to get absolute path
-    static std::string getAbsolutePath(const std::string& relativePath);
-
-    // Method to load and parse the settings file into the JSON object
+    explicit Settings(const std::string& filename);
+    void destroy();
+    void resetFileStream(const std::ios::openmode& mode);
+    void reset(std::ios::openmode fileMode = std::ios::in | std::ios::out | std::ios::app);
     void loadSettings();
-
-    // Create default settings if the file does not exist or is empty
     void createDefaultSettings();
-
-    // Save the current settings to file
-    void saveSettings() const;
+    void verifyAndUpdateFileStream(std::ios::openmode requiredMode);
 
 public:
-    // Singleton pattern for global access to settings
-    static Settings& getInstance();
+    static Settings& getInstance(const std::string& filename = "settings.config");
+    ~Settings();
 
-    // Get a value by key
     std::string get(const std::string& key);
-
-    // Check if a key exists
-    [[nodiscard]] bool hasKey(const std::string& key) const;
-
-    // Set a value by key
+    bool hasKey(const std::string& key) const;
     void set(const std::string& key, const std::string& value);
+    void saveSettings();
+
+    static std::string getAbsolutePath(const std::string& relativePath);
+    static std::string promptAndSet(const std::string& description, const std::string& key, Settings& settings);
 };
+
 
 #endif //SETTINGS_H

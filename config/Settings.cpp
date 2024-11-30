@@ -3,23 +3,28 @@
 // Copyright (c) 2024 Interlaced Pixel. All rights reserved.
 //
 
-#include <fstream>
 #include <stdexcept>
 #include <vector>
+#include <fstream>
+#include <iostream>
 #include "Settings.h"
 
-Settings::Settings() {
-    std::ifstream file(filePath);
-    if (!file.is_open()) {
-        createDefaultSettings();
-        file.open(filePath);
+Settings::Settings(const std::string& filename) : filePath(filename) {
+    verifyAndUpdateFileStream(std::ios::in | std::ios::out | std::ios::app);
+
+    if (!fileStream.is_open()) {
+        if (filePath == "settings.config") {
+            createDefaultSettings();
+        } else {
+            throw std::runtime_error("Failed to open settings file: " + filePath);
+        }
     }
-    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-    if (content.empty()) {
-        createDefaultSettings();
-    }
-    file.close();
-    json.parse(content);
+
+    loadSettings();
+}
+
+Settings::~Settings() {
+    destroy();
 }
 
 std::string Settings::getAbsolutePath(const std::string& relativePath) {
@@ -38,36 +43,24 @@ std::string Settings::getAbsolutePath(const std::string& relativePath) {
 #endif
 }
 
-void Settings::loadSettings() {
-    std::ifstream file(filePath);
-    if (!file.is_open()) {
-        throw std::runtime_error("Failed to open settings file: " + filePath);
-    }
-
-    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-    if (content.empty()) {
-        createDefaultSettings();
-        file.close();
-        file.open(filePath);
-        content = json.generate();
-    }
-    file.close();
-    json.parse(content);
+std::string Settings::promptAndSet(const std::string& description, const std::string& key, Settings& settings) {
+    std::string value;
+    std::cout << description << std::endl;
+    std::cout << "Enter " + key + ": ";
+    std::getline(std::cin, value);
+    settings.set(key, value);
+    return value;
 }
 
 void Settings::createDefaultSettings() {
-    set("client_id", "");
-    set("client_secret", "");
-    set("accessToken", "");
-    set("public_api", "https://public.api.bsky.app");
-    set("auth_endpoint", "https://api.bsky.app/oauth/authorize");
-    set("token_endpoint", "https://api.bsky.app/oauth/token");
-    set("redirect_uri", "");
-}
-
-std::string Settings::get(const std::string& key) {
-    loadSettings();
-    return json.get(key);
+    json.set("client_id", R"(https://bsky.interlacedpixel.com/client-metadata.json)");
+    json.set("client_secret", "");
+    json.set("accessToken", "");
+    json.set("public_api", "https://public.api.bsky.app");
+    json.set("auth_endpoint", "https://bsky.social/oauth/authorize");
+    json.set("token_endpoint", "https://bsky.social/oauth/token");
+    json.set("redirect_uri", "");
+    saveSettings();
 }
 
 bool Settings::hasKey(const std::string& key) const {
@@ -75,21 +68,83 @@ bool Settings::hasKey(const std::string& key) const {
     return std::find(keys.begin(), keys.end(), key) != keys.end();
 }
 
+std::string Settings::get(const std::string& key) {
+    loadSettings();
+    return json.get(key);
+}
+
 void Settings::set(const std::string& key, const std::string& value) {
     json.set(key, value);
     saveSettings();
 }
 
-void Settings::saveSettings() const {
-    std::ofstream file(filePath);
-    if (!file.is_open()) {
-        throw std::runtime_error("Failed to write settings to file: " + filePath);
+void Settings::destroy() {
+    json.clear();
+    if (fileStream.is_open()) {
+        fileStream.close();
     }
-    file << json.generate();
-    file.close();
 }
 
-Settings& Settings::getInstance() {
-    static Settings instance;
+void Settings::resetFileStream(const std::ios::openmode& mode) {
+    if (fileStream.is_open()) {
+        fileStream.close();
+        fileStream.seekg(0, std::ios::beg);
+    }
+
+    if (!fileStream.is_open()) {
+        throw std::runtime_error("Failed to reopen file: " + filePath);
+    }
+
+    verifyAndUpdateFileStream(mode);
+}
+
+void Settings::reset(const std::ios::openmode fileMode) {
+    destroy();
+    resetFileStream(fileMode);
+}
+
+void Settings::loadSettings() {
+    verifyAndUpdateFileStream(std::ios::in);
+
+    fileStream.clear();
+    fileStream.seekg(0, std::ios::beg);
+
+    if (fileStream.peek() != std::ifstream::traits_type::eof()) {
+        const std::string content((std::istreambuf_iterator(fileStream)), std::istreambuf_iterator<char>());
+        if (!content.empty()) {
+            json.parse(content);
+        }
+    } else {
+        std::cerr << "Warning: Settings file is empty." << std::endl;
+    }
+}
+
+
+void Settings::saveSettings() {
+    verifyAndUpdateFileStream(std::ios::out | std::ios::trunc);
+    fileStream << json.generate();
+    fileStream.flush();
+}
+
+void Settings::verifyAndUpdateFileStream(const std::ios::openmode requiredMode) {
+    if (!fileStream.is_open()) {
+        fileStream.open(filePath, requiredMode);
+        if (!fileStream.is_open()) {
+            throw std::runtime_error("Failed to open settings file with required mode: " + filePath);
+        }
+    } else {
+        if (const std::ios::openmode currentMode = fileStream.flags(); (currentMode & requiredMode) != requiredMode) {
+            fileStream.close();
+            fileStream.open(filePath, requiredMode);
+            if (!fileStream.is_open()) {
+                throw std::runtime_error("Failed to reopen settings file with required mode: " + filePath);
+            }
+        }
+    }
+}
+
+
+Settings& Settings::getInstance(const std::string& filename) {
+    static Settings instance(filename);
     return instance;
 }

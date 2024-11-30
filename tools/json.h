@@ -30,6 +30,9 @@ public:
 
     // Generate a JSON string from the data
     [[nodiscard]] std::string generate() const;
+
+    // Clears the data and key variables
+    void clear();
 };
 
 

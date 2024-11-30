@@ -3,7 +3,7 @@
 // Copyright (c) 2024 Interlaced Pixel. All rights reserved.
 //
 
-#include "JSON.h"
+#include "json.h"
 #include <sstream>
 
 void JSON::parse(const std::string& jsonString) {
@@ -106,4 +106,9 @@ std::string JSON::generate() const {
     ss << "}";
 
     return ss.str();
+}
+
+void JSON::clear() {
+    data.clear();
+    keys.clear();
 }
