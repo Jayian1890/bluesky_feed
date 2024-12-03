@@ -10,7 +10,7 @@
 
 #include <map>
 #include <string>
-#include "../tools/json.h"
+#include "../nlohmann/json.hpp"
 
 class HTTPSClient {
     std::string host;
@@ -38,7 +38,7 @@ public:
     void addQueryParam(const std::string& key, const std::string& value);
 
     // Perform a GET request and return JSON
-    [[nodiscard]] JSON get() const;
+    [[nodiscard]] nlohmann::json get() const;
 };
 
 

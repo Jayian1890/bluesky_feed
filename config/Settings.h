@@ -8,45 +8,37 @@
 
 #pragma once
 
-#include <iostream>
 #include <string>
-
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif
-
-#pragma once
-
-#include <fstream>
-#include "../tools/json.h"
+#include <unordered_map>
+#include "../nlohmann/json.hpp"
 
 class Settings {
-    JSON json;
-    const std::string& filePath;
-    std::fstream fileStream;
+    static constexpr auto DEFAULT_SETTINGS_PATH = "settings.json";
 
-    explicit Settings(const std::string& filename);
-    void destroy();
-    void resetFileStream(const std::ios::openmode& mode);
-    void reset(std::ios::openmode fileMode = std::ios::in | std::ios::out | std::ios::app);
+    nlohmann::json json; // JSON object for managing settings
+    const std::string filePath; // Path to the settings file
+    const std::unordered_map<std::string, std::string> defaultSettings;
+
     void loadSettings();
-    void createDefaultSettings();
-    void verifyAndUpdateFileStream(std::ios::openmode requiredMode);
+    void saveSettings();
+    void loadAndEnsureDefaults(const std::unordered_map<std::string, std::string>& defaults);
+
+    static bool isFileEmpty(const std::string& path);
+    static std::unordered_map<std::string, std::string> getDefaultSettings();
 
 public:
-    static Settings& getInstance(const std::string& filename = "settings.config");
-    ~Settings();
+    explicit Settings(const std::string& filename, const std::unordered_map<std::string, std::string>& defaults = {});
+    ~Settings() = default;
 
     std::string get(const std::string& key);
     bool hasKey(const std::string& key) const;
     void set(const std::string& key, const std::string& value);
-    void saveSettings();
 
     static std::string getAbsolutePath(const std::string& relativePath);
     static std::string promptAndSet(const std::string& description, const std::string& key, Settings& settings);
+
+    static std::unique_ptr<Settings> createInstance(const std::string& filename = DEFAULT_SETTINGS_PATH,
+        const std::unordered_map<std::string, std::string>& defaults = {});
 };
 
-
-#endif //SETTINGS_H
+#endif // SETTINGS_H

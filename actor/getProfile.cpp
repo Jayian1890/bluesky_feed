@@ -2,14 +2,15 @@
 // Created by jayian on 11/26/24.
 // Copyright (c) 2024 Interlaced Pixel. All rights reserved.
 //
-
+/*
 #pragma once
 
+#include <iostream>
 #include "../config/Settings.h"
 #include "../network/https_client.h"
 
-class getProfile : public JSON {
-    std::string _host = Settings::getInstance().get("public_api");
+class getProfile : public nlohmann::json {
+    std::string _host = Settings::createInstance()->get("public_api");
     std::string _endpoint = "/xrpc/app.bsky.actor.getProfile";
     std::string _bearerToken;
     std::string _actor;
@@ -33,7 +34,7 @@ public:
         client.addQueryParam("actor", _actor);
 
         try {
-            const JSON response = client.get();
+            const nlohmann::json response = client.get();
             for (const auto& key : response.getKeys()) {
                 set(key, response.get(key));
             }
@@ -41,4 +42,4 @@ public:
             std::cerr << "Error fetching preferences: " << e.what() << "\n";
         }
     }
-};
+};*/

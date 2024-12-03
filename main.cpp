@@ -24,7 +24,9 @@ std::pair<std::string, std::vector<std::string>> parseInput(const std::string& i
 }
 
 int main() {
-    std::cout << "Welcome to Bluesky Feed Console!" << std::endl;
+    const auto settings = Settings::createInstance();
+
+    std::cout << "Welcome to " + settings->get("feed_name") + " feed Console!" << std::endl;
     std::cout << "Type 'help' for a list of commands." << std::endl;
 
     std::string input;

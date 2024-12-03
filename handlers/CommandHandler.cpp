@@ -13,10 +13,10 @@ void CommandHandler::executeCommand(const std::string& command, const std::vecto
         if (args.size() != 1) {
             std::cerr << "Error: getprofile requires exactly one argument." << std::endl;
         } else {
-            std::cout << getProfile(args[0]).generate() << std::endl;
+            //std::cout << getProfile(args[0]).generate() << std::endl;
         }
     } else if (command == "metadata") {
-        OAuthClient::createClientMetadata();
+        OAuthClient::generateClientMetadata();
     } else if (command == "oauth") {
         OAuthClient::authenticate();
     } else if (command == "help") {

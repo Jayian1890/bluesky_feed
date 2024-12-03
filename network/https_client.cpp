@@ -47,7 +47,7 @@ std::string HTTPSClient::constructUrl() const {
 }
 
 // Perform a GET request and return JSON
-JSON HTTPSClient::get() const {
+nlohmann::json HTTPSClient::get() const {
     CURL* curl = curl_easy_init();
     if (!curl) {
         throw std::runtime_error("Failed to initialize libcurl");
@@ -82,7 +82,5 @@ JSON HTTPSClient::get() const {
     curl_slist_free_all(headers);
 
     // Parse JSON response
-    JSON json;
-    json.parse(responseData);
-    return json;
+    return nlohmann::json::parse(responseData);
 }

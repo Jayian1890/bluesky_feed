@@ -11,11 +11,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "../config/Settings.h"
 
 class CommandHandler {
-    Settings& settings = Settings::getInstance(); // Reference to Settings instance
-
 public:
     // Execute a command with arguments
     static void executeCommand(const std::string& command, const std::vector<std::string>& args);

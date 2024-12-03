@@ -8,8 +8,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(bluesky_feed
     main.cpp
         actor/getProfile.cpp
-        tools/JSON.cpp
-        tools/JSON.h
         config/Settings.cpp
         config/Settings.h
         network/https_client.cpp
