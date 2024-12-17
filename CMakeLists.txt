@@ -14,10 +14,12 @@ add_executable(bluesky_feed
         network/https_client.h
         handlers/CommandHandler.cpp
         handlers/CommandHandler.h
-        network/OAuthClient.h
+        network/OAuthClient.hpp
         tools/url_encoder.cpp
         tools/url_encoder.h
+        tools/logging.hpp
 )
 
-find_package(CURL REQUIRED)
-target_link_libraries(bluesky_feed CURL)
+find_package(OpenSSL REQUIRED)
+add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
+target_link_libraries(bluesky_feed OpenSSL::SSL OpenSSL::Crypto)

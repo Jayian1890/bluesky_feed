@@ -3,84 +3,67 @@
 // Copyright (c) 2024 Interlaced Pixel. All rights reserved.
 //
 
-#include <stdexcept>
-#include <curl/curl.h>
 #include "https_client.h"
-
-// Static callback to store response data
-size_t HTTPSClient::writeCallback(void* contents, const size_t size, const size_t nmemb, std::string* response) {
-    const size_t totalSize = size * nmemb;
-    response->append(static_cast<char*>(contents), totalSize);
-    return totalSize;
-}
-
-// Constructor
-HTTPSClient::HTTPSClient() = default;
-
-// Singleton instance getter
-HTTPSClient* HTTPSClient::getInstance() {
-    static HTTPSClient instance;
-    return &instance;
-}
+#include <sstream>
+#include "../cpp-httplib/httplib.h"
 
 // Setters
-void HTTPSClient::setHost(const std::string& h) { host = h; }
-void HTTPSClient::setEndpoint(const std::string& ep) { endpoint = ep; }
-void HTTPSClient::setBearerToken(const std::string& token) { bearerToken = token; }
-void HTTPSClient::addQueryParam(const std::string& key, const std::string& value) {
-    queryParams[key] = value;
+void HTTPSClient::setHost(const std::string_view h) { host = h; }
+void HTTPSClient::setEndpoint(const std::string_view ep) { endpoint = ep; }
+void HTTPSClient::setBearerToken(const std::string_view token) { bearerToken = token; }
+void HTTPSClient::addQueryParam(const std::string_view key, const std::string_view value) {
+    queryParams[std::string(key)] = value;  // Convert to std::string for map compatibility
 }
 
 // Construct the full URL including query parameters
 std::string HTTPSClient::constructUrl() const {
-    std::string url = host + endpoint;
+    std::ostringstream urlStream;
+
+    // Ensure the host and endpoint are combined correctly.
+    // Assuming `endpoint` is relative, prepend `host` if needed.
+    urlStream << host << endpoint;
     if (!queryParams.empty()) {
-        url += "?";
+        urlStream << "?";
         for (auto it = queryParams.begin(); it != queryParams.end(); ++it) {
             if (it != queryParams.begin()) {
-                url += "&";
+                urlStream << "&";
             }
-            url += it->first + "=" + it->second;
+            // URL encode the query params
+            urlStream << httplib::detail::encode_url(it->first) << "="
+                      << httplib::detail::encode_url(it->second);
         }
     }
-    return url;
+    return urlStream.str();
 }
 
 // Perform a GET request and return JSON
 nlohmann::json HTTPSClient::get() const {
-    CURL* curl = curl_easy_init();
-    if (!curl) {
-        throw std::runtime_error("Failed to initialize libcurl");
+    if (host.empty()) {
+        throw HTTPException("Host not set for HTTPSClient");
     }
 
-    const std::string url = constructUrl();
-    std::string responseData;
-    struct curl_slist* headers = nullptr;
+    httplib::SSLClient client(host);  // Use SSL client for HTTPS
+    client.set_follow_location(true); // Follow redirects automatically
 
-    // Set up headers
+    const std::string constructedUrl = constructUrl();
+
+    // Set headers
+    httplib::Headers headers;
+    headers.insert({"Accept", "application/json"});
     if (!bearerToken.empty()) {
-        const std::string authHeader = "Authorization: Bearer " + bearerToken;
-        headers = curl_slist_append(headers, authHeader.c_str());
-    }
-    headers = curl_slist_append(headers, "Accept: application/json");
-
-    // Set CURL options
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseData);
-
-    // Perform the request
-    if (const CURLcode res = curl_easy_perform(curl); res != CURLE_OK) {
-        curl_easy_cleanup(curl);
-        curl_slist_free_all(headers);
-        throw std::runtime_error(std::string("CURL error: ") + curl_easy_strerror(res));
+        headers.insert({"Authorization", "Bearer " + bearerToken});
     }
 
-    // Clean up
-    curl_easy_cleanup(curl);
-    curl_slist_free_all(headers);
+    // Perform the GET request
+    auto res = client.Get(constructedUrl, headers);
 
-    // Parse JSON response
-    return nlohmann::json::parse(responseData);
+    // Check response status
+    if (!res || res->status != 200) {
+        //throw HTTPException("HTTP GET failed with status: " + (res ? std::to_string(res->status) : "No response"));
+        return nullptr;
+    }
+
+    // Parse JSON response body
+    const auto& body = res->body;
+    return nlohmann::json::parse(body.data(), body.data() + body.size());
 }

@@ -4,7 +4,7 @@
 //
 
 #include "../actor/getProfile.cpp"
-#include "../network/OAuthClient.h"
+#include "../network/OAuthClient.hpp"
 #include "CommandHandler.h"
 
 // Execute a command
@@ -13,12 +13,17 @@ void CommandHandler::executeCommand(const std::string& command, const std::vecto
         if (args.size() != 1) {
             std::cerr << "Error: getprofile requires exactly one argument." << std::endl;
         } else {
-            //std::cout << getProfile(args[0]).generate() << std::endl;
+            std::cout << GetProfile(args[0]).getData() << std::endl;
         }
     } else if (command == "metadata") {
         OAuthClient::generateClientMetadata();
     } else if (command == "oauth") {
-        OAuthClient::authenticate();
+        OAuthClient client("your_client_id", "your_client_secret",
+                   "https://example.com/auth", "https://example.com/token",
+                   "http://localhost:8080/callback");
+
+        client.authenticate();
+        std::cout << "Access Token: " << client.getAccessToken() << std::endl;
     } else if (command == "help") {
         printHelp();
     } else {

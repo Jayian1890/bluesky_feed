@@ -12,34 +12,36 @@
 #include <string>
 #include "../nlohmann/json.hpp"
 
+// Custom HTTP exception
+class HTTPException final : public std::exception {
+    std::string message;
+
+public:
+    explicit HTTPException(std::string msg) : message(std::move(msg)) {}
+
+    [[nodiscard]] const char* what() const noexcept override {
+        return message.c_str();
+    }
+};
+
 class HTTPSClient {
     std::string host;
     std::string endpoint;
     std::string bearerToken;
-    std::map<std::string, std::string> queryParams;
-
-    // Static callback to store response data
-    static size_t writeCallback(void* contents, size_t size, size_t nmemb, std::string* response);
+    std::map<std::string, std::string, std::less<>> queryParams;
 
     // Construct the full URL including query parameters
     [[nodiscard]] std::string constructUrl() const;
 
 public:
-    // Singleton instance getter
-    static HTTPSClient* getInstance();
-
-    // Constructor
-    HTTPSClient();
-
     // Setters
-    void setHost(const std::string& h);
-    void setEndpoint(const std::string& ep);
-    void setBearerToken(const std::string& token);
-    void addQueryParam(const std::string& key, const std::string& value);
+    void setHost(std::string_view h);
+    void setEndpoint(std::string_view ep);
+    void setBearerToken(std::string_view token);
+    void addQueryParam(std::string_view key, std::string_view value);
 
     // Perform a GET request and return JSON
     [[nodiscard]] nlohmann::json get() const;
 };
 
-
-#endif //HTTPSCLIENT_H
+#endif // HTTPSCLIENT_H

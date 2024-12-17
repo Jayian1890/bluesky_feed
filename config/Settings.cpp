@@ -4,14 +4,13 @@
 //
 
 #include "Settings.h"
-#include <stdexcept>
-#include <sstream>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 // Constructor
-Settings::Settings(const std::string& filename, const std::unordered_map<std::string, std::string>& defaults)
-    : filePath(filename), defaultSettings(defaults.empty() ? getDefaultSettings() : defaults) {
+Settings::Settings(std::string filename, std::unordered_map<std::string, std::string> defaults)
+    : filePath(std::move(filename)),
+      defaultSettings(defaults.empty() ? getDefaultSettings() : std::move(defaults)) {
     loadAndEnsureDefaults(defaultSettings);
 }
 
@@ -28,7 +27,7 @@ void Settings::loadSettings() {
         // File doesn't exist, create it
         std::ofstream outFile(filePath, std::ios::out);
         if (!outFile) {
-            throw std::runtime_error("Failed to create settings file: " + filePath);
+            throw JSONParseException(R"(Failed to create settings file: )" + filePath);
         }
         json = defaultSettings; // Initialize with defaults
         outFile << json.dump(4); // Save defaults to the file
@@ -40,17 +39,17 @@ void Settings::loadSettings() {
         try {
             inFile >> json; // Parse JSON content
         } catch (const std::exception& e) {
-            throw std::runtime_error("Invalid JSON format in settings file: " + std::string(e.what()));
+            throw JSONParseException("Invalid JSON format in settings file: " + std::string(e.what()));
         }
     }
     inFile.close();
 }
 
 // Save settings to the file
-void Settings::saveSettings() {
+void Settings::saveSettings() const {
     std::ofstream outFile(filePath, std::ios::out | std::ios::trunc);
     if (!outFile) {
-        throw std::runtime_error("Failed to open settings file for writing: " + filePath);
+        throw JSONParseException("Failed to open settings file for writing: " + filePath);
     }
     outFile << json.dump(4); // Pretty print JSON with 4 spaces
     outFile.close();
@@ -67,14 +66,6 @@ void Settings::loadAndEnsureDefaults(const std::unordered_map<std::string, std::
     }
 
     saveSettings(); // Save updated settings back to the file
-}
-
-std::string Settings::get(const std::string& key) {
-    loadSettings();
-    if (!json.contains(key)) {
-        throw std::runtime_error("Key not found: " + key);
-    }
-    return json[key].get<std::string>();
 }
 
 bool Settings::hasKey(const std::string& key) const {
@@ -108,9 +99,9 @@ std::string Settings::getAbsolutePath(const std::string& relativePath) {
     }
     return std::string(fullPath);
 #else
-    char fullPath[PATH_MAX];
-    if (realpath(relativePath.c_str(), fullPath) == nullptr) {
-        throw std::runtime_error("Failed to resolve full path for: " + relativePath);
+    std::string fullPath;
+    if (realpath(relativePath.c_str(), fullPath.data()) == nullptr) {
+        throw JSONParseException("Failed to resolve full path for: " + relativePath);
     }
     return {fullPath};
 #endif

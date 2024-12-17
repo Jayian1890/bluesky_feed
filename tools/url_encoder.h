@@ -11,17 +11,15 @@
 #pragma once
 
 #include <string>
-#include <sstream>
-#include <iomanip>
 #include <stdexcept>
 
 class URLEncoder {
 public:
     // Encodes a full URL while preserving the protocol and domain
-    static std::string encodeURL(const std::string& url);
+    static std::string encodeURL(std::string_view url);
 
     // Encodes a specific URL component (e.g., query parameters)
-    static std::string encodeComponent(const std::string& value);
+    static std::string encodeComponent(std::string_view value);
 
     // Decodes a URL or component
     static std::string decode(const std::string& value);

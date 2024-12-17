@@ -7,6 +7,7 @@
 #include <sstream>
 #include "handlers/CommandHandler.h"
 #include "config/Settings.h"
+#include "tools/logging.hpp"
 
 // Helper function to split input into command and arguments
 std::pair<std::string, std::vector<std::string>> parseInput(const std::string& input) {
@@ -26,8 +27,8 @@ std::pair<std::string, std::vector<std::string>> parseInput(const std::string& i
 int main() {
     const auto settings = Settings::createInstance();
 
-    std::cout << "Welcome to " + settings->get("feed_name") + " feed Console!" << std::endl;
-    std::cout << "Type 'help' for a list of commands." << std::endl;
+    Logging::info("Welcome to " + settings->get<std::string>("feed_name") + " feed Console!");
+    Logging::info("Type 'help' for a list of commands.");
 
     std::string input;
     while (true) {

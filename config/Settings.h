@@ -10,6 +10,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <exception>
 #include "../nlohmann/json.hpp"
 
 class Settings {
@@ -20,18 +21,23 @@ class Settings {
     const std::unordered_map<std::string, std::string> defaultSettings;
 
     void loadSettings();
-    void saveSettings();
+    void saveSettings() const;
     void loadAndEnsureDefaults(const std::unordered_map<std::string, std::string>& defaults);
 
     static bool isFileEmpty(const std::string& path);
     static std::unordered_map<std::string, std::string> getDefaultSettings();
 
 public:
-    explicit Settings(const std::string& filename, const std::unordered_map<std::string, std::string>& defaults = {});
+    explicit Settings(std::string filename, std::unordered_map<std::string, std::string> defaults);
     ~Settings() = default;
 
-    std::string get(const std::string& key);
-    bool hasKey(const std::string& key) const;
+    template <typename T>
+    T get(const std::string& key);
+
+    template <typename T>
+    T get(const std::string& key, const T& defaultValue);
+
+    [[nodiscard]] bool hasKey(const std::string& key) const;
     void set(const std::string& key, const std::string& value);
 
     static std::string getAbsolutePath(const std::string& relativePath);
@@ -41,4 +47,16 @@ public:
         const std::unordered_map<std::string, std::string>& defaults = {});
 };
 
+class JSONParseException : public std::exception {
+    std::string message;
+
+public:
+    explicit JSONParseException(std::string msg) : message(std::move(msg)) {}
+
+    [[nodiscard]] const char* what() const noexcept override {
+        return message.c_str();
+    }
+};
+
+#include "Settings.tpp" // Include the template implementation
 #endif // SETTINGS_H
