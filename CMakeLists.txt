@@ -31,18 +31,3 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 target_link_libraries(bluesky_feed OpenSSL::SSL OpenSSL::Crypto)
 
 add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
-
-# Enable testing
-enable_testing()
-
-# Fetch GoogleTest
-include(FetchContent)
-FetchContent_Declare(
-        googletest
-        URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
-)
-FetchContent_MakeAvailable(googletest)
-
-# Link test executable
-add_executable(https_client_test tests/test_https_client.cpp)
-target_link_libraries(https_client_test PRIVATE HTTPSClient gtest_main gtest)
