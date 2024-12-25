@@ -66,7 +66,11 @@ private:
 
         // Use localtime_r for thread safety
         tm localTime{};
-        localtime_r(&time, &localTime);
+#ifdef _WIN32
+        localtime_s(&localTime, &time); // Windows-specific
+#else
+        localtime_r(&time, &localTime); // POSIX-specific
+#endif
 
         std::ostringstream oss;
         oss << std::put_time(&localTime, "%m:%d:%Y %H:%M:%S")
