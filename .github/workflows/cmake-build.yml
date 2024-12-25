@@ -28,7 +28,7 @@ jobs:
     - name: Verify OpenSSL Installation (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        &"C:\Program Files\OpenSSL-Win64\bin\openssl.exe" version
+        &"C:\Program Files\OpenSSL\bin\openssl.exe" version
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
