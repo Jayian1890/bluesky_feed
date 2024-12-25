@@ -39,6 +39,7 @@ jobs:
         path: |
           ./build/bluesky_feed
           ./build/Release/bluesky_feed.exe
+        retention-days: 30
 
     - name: Test
       working-directory: ${{github.workspace}}/build
