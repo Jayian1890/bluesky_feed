@@ -6,13 +6,20 @@
 #include "https_client.h"
 #include <sstream>
 #include "../cpp-httplib/httplib.h"
+#include "../tools/logging.hpp"
 
 // Setters
-void HTTPSClient::setHost(const std::string_view h) { host = h; }
+void HTTPSClient::setHost(const std::string_view h) {
+    if (h.find("https://") == 0) {
+        host = h.substr(8);
+    } else {
+        host = h;
+    }
+}
 void HTTPSClient::setEndpoint(const std::string_view ep) { endpoint = ep; }
 void HTTPSClient::setBearerToken(const std::string_view token) { bearerToken = token; }
 void HTTPSClient::addQueryParam(const std::string_view key, const std::string_view value) {
-    queryParams[std::string(key)] = value;  // Convert to std::string for map compatibility
+    queryParams[std::string(key)] = value;
 }
 
 // Construct the full URL including query parameters
@@ -39,7 +46,8 @@ std::string HTTPSClient::constructUrl() const {
 // Perform a GET request and return JSON
 nlohmann::json HTTPSClient::get() const {
     if (host.empty()) {
-        throw HTTPException("Host not set for HTTPSClient");
+        Logging::error("HTTPSClient::get()", "host is empty");
+        return {};
     }
 
     httplib::SSLClient client(host);  // Use SSL client for HTTPS
@@ -50,6 +58,7 @@ nlohmann::json HTTPSClient::get() const {
     // Set headers
     httplib::Headers headers;
     headers.insert({"Accept", "application/json"});
+    headers.insert({"Content-Type", "application/json"});
     if (!bearerToken.empty()) {
         headers.insert({"Authorization", "Bearer " + bearerToken});
     }
@@ -59,8 +68,11 @@ nlohmann::json HTTPSClient::get() const {
 
     // Check response status
     if (!res || res->status != 200) {
-        //throw HTTPException("HTTP GET failed with status: " + (res ? std::to_string(res->status) : "No response"));
-        return nullptr;
+        Logging::error("HTTP GET failed with status: " + (res ? std::to_string(res->status) : "No response"));
+        for (const auto& [key, value] : queryParams) {
+            Logging::debug("Query Param: " + key + " = " + value);
+        }
+        return {};
     }
 
     // Parse JSON response body

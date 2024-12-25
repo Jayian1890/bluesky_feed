@@ -10,25 +10,41 @@
 // Execute a command
 void CommandHandler::executeCommand(const std::string& command, const std::vector<std::string>& args) {
     if (command == "getprofile") {
-        if (args.size() != 1) {
-            std::cerr << "Error: getprofile requires exactly one argument." << std::endl;
-        } else {
-            std::cout << GetProfile(args[0]).getData() << std::endl;
-        }
+        handleGetProfile(args);
     } else if (command == "metadata") {
-        OAuthClient::generateClientMetadata();
+        handleMetadata();
     } else if (command == "oauth") {
-        OAuthClient client("your_client_id", "your_client_secret",
-                   "https://example.com/auth", "https://example.com/token",
-                   "http://localhost:8080/callback");
-
-        client.authenticate();
-        std::cout << "Access Token: " << client.getAccessToken() << std::endl;
+        handleOAuth();
     } else if (command == "help") {
         printHelp();
     } else {
         std::cout << "Unknown command: " << command << std::endl;
     }
+}
+
+// Separate functions for each command
+void CommandHandler::handleGetProfile(const std::vector<std::string>& args) {
+    if (args.size() != 1) {
+        std::cerr << "Error: getprofile requires exactly one argument." << std::endl;
+        return;
+    }
+
+    const auto identity = std::string(args[0]);
+    const auto profile = GetProfile(identity);
+    std::cout << profile.getData() << std::endl;
+}
+
+void CommandHandler::handleMetadata() {
+    OAuthClient::generateClientMetadata();
+}
+
+void CommandHandler::handleOAuth() {
+    OAuthClient client("your_client_id", "your_client_secret",
+                       "https://example.com/auth", "https://example.com/token",
+                       "http://localhost:8080/callback");
+
+    client.authenticate();
+    std::cout << "Access Token: " << client.getAccessToken() << std::endl;
 }
 
 // Print help message

@@ -17,6 +17,13 @@ public:
     // Execute a command with arguments
     static void executeCommand(const std::string& command, const std::vector<std::string>& args);
 
+    // get the requested actor's profile via API call
+    static void handleGetProfile(const std::vector<std::string>& args);
+
+    static void handleMetadata();
+
+    static void handleOAuth();
+
     // Print help message for available commands
     static void printHelp();
 };
