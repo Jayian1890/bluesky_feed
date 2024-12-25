@@ -20,7 +20,7 @@ jobs:
     - name: Install Dependencies (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        choco install openssl --version=3.2.1 --no-progress --force
+        choco install openssl --no-progress --force
         echo "OPENSSL_ROOT_DIR=C:\Program Files\OpenSSL-Win64" >> $env:GITHUB_ENV
         echo "OPENSSL_LIB_DIR=C:\Program Files\OpenSSL-Win64\lib" >> $env:GITHUB_ENV
         echo "OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL-Win64\include" >> $env:GITHUB_ENV
@@ -28,7 +28,7 @@ jobs:
     - name: Verify OpenSSL Installation (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        &"C:\Program Files\OpenSSL-Win64\bin\openssl.exe" version
+        &"C:\Program Files\OpenSSL\bin\openssl.exe" version
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
