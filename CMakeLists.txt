@@ -5,10 +5,19 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Set OpenSSL directories
-set(OPENSSL_ROOT_DIR "C:/Program Files/OpenSSL/OpenSSL")
-set(OPENSSL_INCLUDE_DIR "C:/Program Files/OpenSSL/include")
-set(OPENSSL_LIBRARIES "C:/Program Files/OpenSSL/lib")
+# Platform-specific OpenSSL configuration
+if(WIN32)
+    # Windows OpenSSL setup
+    set(OPENSSL_ROOT_DIR "C:/Program Files/OpenSSL/OpenSSL")
+    set(OPENSSL_INCLUDE_DIR "C:/Program Files/OpenSSL/include")
+    set(OPENSSL_LIBRARIES "C:/Program Files/OpenSSL/lib")
+elseif(APPLE)
+    # macOS OpenSSL setup - typically uses system libraries or you can install OpenSSL via Homebrew
+    find_package(OpenSSL REQUIRED)
+elseif(UNIX)
+    # Linux OpenSSL setup
+    find_package(OpenSSL REQUIRED)
+endif()
 
 # Your executable or library
 add_executable(bluesky_feed
