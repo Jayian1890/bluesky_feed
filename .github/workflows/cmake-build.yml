@@ -17,17 +17,6 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Install Dependencies (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libssl-dev
-
-    - name: Install Dependencies (macOS)
-      if: matrix.os == 'macOS-latest'
-      run: |
-        brew install openssl
-
     - name: Install Dependencies (Windows)
       if: matrix.os == 'windows-latest'
       run: |
@@ -42,11 +31,7 @@ jobs:
         &"C:\Program Files\OpenSSL-Win64\bin\openssl.exe" version
 
     - name: Configure CMake
-      run: |
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ^
-          -DOPENSSL_ROOT_DIR="${{ env.OPENSSL_ROOT_DIR }}" ^
-          -DOPENSSL_LIB_DIR="${{ env.OPENSSL_LIB_DIR }}" ^
-          -DOPENSSL_INCLUDE_DIR="${{ env.OPENSSL_INCLUDE_DIR }}"
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build ${{ matrix.os }}
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
