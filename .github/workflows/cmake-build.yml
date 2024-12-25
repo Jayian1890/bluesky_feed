@@ -36,7 +36,9 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.os }}
-        path: ./build/bluesky_feed*
+        path: |
+          ./build/bluesky_feed
+          ./build/Release/bluesky_feed.exe
 
     - name: Test
       working-directory: ${{github.workspace}}/build
