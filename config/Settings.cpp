@@ -4,8 +4,16 @@
 //
 
 #include "Settings.h"
+#include <filesystem>
 #include <fstream>
 #include <iostream>
+#ifndef MAX_PATH
+    #ifdef _WIN32
+        #include <windows.h>
+    #else
+        #define MAX_PATH 4096
+    #endif
+#endif
 
 // Constructor
 Settings::Settings(std::string filename, std::unordered_map<std::string, std::string> defaults)
@@ -92,19 +100,11 @@ std::unordered_map<std::string, std::string> Settings::getDefaultSettings() {
 }
 
 std::string Settings::getAbsolutePath(const std::string& relativePath) {
-#ifdef _WIN32
-    char fullPath[MAX_PATH];
-    if (GetFullPathName(relativePath.c_str(), MAX_PATH, fullPath, nullptr) == 0) {
-        throw std::runtime_error("Failed to resolve full path for: " + relativePath);
+    try {
+        return std::filesystem::absolute(relativePath).string();
+    } catch (const std::filesystem::filesystem_error& e) {
+        throw JSONParseException("Failed to resolve full path for: " + relativePath + " | Error: " + e.what());
     }
-    return std::string(fullPath);
-#else
-    std::string fullPath;
-    if (realpath(relativePath.c_str(), fullPath.data()) == nullptr) {
-        throw JSONParseException("Failed to resolve full path for: " + relativePath);
-    }
-    return {fullPath};
-#endif
 }
 
 std::string Settings::promptAndSet(const std::string& description, const std::string& key, Settings& settings) {
