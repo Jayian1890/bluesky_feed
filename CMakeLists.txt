@@ -5,9 +5,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Set OpenSSL directories
+set(OPENSSL_ROOT_DIR "C:/Program Files/OpenSSL/OpenSSL")
+set(OPENSSL_INCLUDE_DIR "C:/Program Files/OpenSSL/include")
+set(OPENSSL_LIBRARIES "C:/Program Files/OpenSSL/lib")
+
 # Your executable or library
 add_executable(bluesky_feed
-    main.cpp
+        main.cpp
         actor/getProfile.cpp
         config/Settings.cpp
         config/Settings.h
@@ -30,4 +35,5 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 # Link OpenSSL libraries
 target_link_libraries(bluesky_feed OpenSSL::SSL OpenSSL::Crypto)
 
+# Add OpenSSL support for cpp-httplib
 add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
