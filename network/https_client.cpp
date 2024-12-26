@@ -3,7 +3,7 @@
 // Copyright (c) 2024 Interlaced Pixel. All rights reserved.
 //
 
-#include "https_client.h"
+#include "https_client.hpp"
 #include <sstream>
 #include "../cpp-httplib/httplib.h"
 #include "../tools/logging.hpp"

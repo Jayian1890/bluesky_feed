@@ -5,7 +5,7 @@
 
 #include "../actor/getProfile.cpp"
 #include "../network/oauth_client.hpp"
-#include "command_handler.h"
+#include "command_handler.hpp"
 
 // Execute a command
 void CommandHandler::executeCommand(const std::string& command, const std::vector<std::string>& args) {

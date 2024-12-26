@@ -3,7 +3,7 @@
 // Copyright (c) 2024 Interlaced Pixel. All rights reserved.
 //
 
-#include "url_encoder.h"
+#include "url_encoder.hpp"
 #include <iomanip>
 #include <sstream>
 

@@ -5,7 +5,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "handlers/command_handler.h"
+#include "handlers/command_handler.hpp"
 #include "config/settings.hpp"
 #include "tools/logging.hpp"
 

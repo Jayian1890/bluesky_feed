@@ -23,15 +23,15 @@ endif()
 add_executable(bluesky_feed
         main.cpp
         actor/getProfile.cpp
-        config/Settings.cpp
+        config/settings.cpp
         config/settings.hpp
         network/https_client.cpp
-        network/https_client.h
+        network/https_client.hpp
         handlers/command_handler.cpp
-        handlers/command_handler.h
+        handlers/command_handler.hpp
         network/oauth_client.hpp
         tools/url_encoder.cpp
-        tools/url_encoder.h
+        tools/url_encoder.hpp
         tools/logging.hpp
 )
 

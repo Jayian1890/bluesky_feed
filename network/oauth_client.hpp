@@ -11,7 +11,7 @@
 #include "../cpp-httplib/httplib.h" // Include httplib for HTTP requests
 #include "../nlohmann/json.hpp"
 #include "../tools/logging.hpp"
-#include "../tools/url_encoder.h"
+#include "../tools/url_encoder.hpp"
 
 
 class OAuthException final : public std::exception {

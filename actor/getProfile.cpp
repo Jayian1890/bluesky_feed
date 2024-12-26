@@ -4,7 +4,7 @@
 //
 
 #include "../config/settings.hpp"
-#include "../network/https_client.h"
+#include "../network/https_client.hpp"
 #include "../nlohmann/json.hpp"
 #include "../tools/logging.hpp"
 
