@@ -24,12 +24,12 @@ add_executable(bluesky_feed
         main.cpp
         actor/getProfile.cpp
         config/Settings.cpp
-        config/Settings.h
+        config/settings.hpp
         network/https_client.cpp
         network/https_client.h
-        handlers/CommandHandler.cpp
-        handlers/CommandHandler.h
-        network/OAuthClient.hpp
+        handlers/command_handler.cpp
+        handlers/command_handler.h
+        network/oauth_client.hpp
         tools/url_encoder.cpp
         tools/url_encoder.h
         tools/logging.hpp

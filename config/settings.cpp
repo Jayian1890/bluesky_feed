@@ -3,7 +3,7 @@
 // Copyright (c) 2024 Interlaced Pixel. All rights reserved.
 //
 
-#include "Settings.h"
+#include "settings.hpp"
 #include <filesystem>
 #include <fstream>
 #include <iostream>

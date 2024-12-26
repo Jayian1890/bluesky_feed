@@ -4,15 +4,14 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
 #include <thread>
-#include <iostream>
-#include "RedirectUriHandler.hpp"
-#include "../nlohmann/json.hpp"
-#include "../config/Settings.h"
-#include "../tools/url_encoder.h"
-#include "../tools/logging.hpp"
+#include <unordered_map>
+#include "redirect_uri_handler.hpp"
+#include "../config/settings.hpp"
 #include "../cpp-httplib/httplib.h" // Include httplib for HTTP requests
+#include "../nlohmann/json.hpp"
+#include "../tools/logging.hpp"
+#include "../tools/url_encoder.h"
 
 
 class OAuthException final : public std::exception {

@@ -3,7 +3,7 @@
 // Copyright (c) 2024 Interlaced Pixel. All rights reserved.
 //
 
-#include "../config/Settings.h"
+#include "../config/settings.hpp"
 #include "../network/https_client.h"
 #include "../nlohmann/json.hpp"
 #include "../tools/logging.hpp"

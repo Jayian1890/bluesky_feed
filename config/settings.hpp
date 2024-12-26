@@ -58,5 +58,5 @@ public:
     }
 };
 
-#include "Settings.tpp" // Include the template implementation
+#include "settings.tpp" // Include the template implementation
 #endif // SETTINGS_H

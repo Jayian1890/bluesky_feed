@@ -5,8 +5,8 @@
 
 #include <iostream>
 #include <sstream>
-#include "handlers/CommandHandler.h"
-#include "config/Settings.h"
+#include "handlers/command_handler.h"
+#include "config/settings.hpp"
 #include "tools/logging.hpp"
 
 // Helper function to split input into command and arguments
