@@ -3,10 +3,10 @@
 // Copyright (c) 2024 Interlaced Pixel. All rights reserved.
 //
 
-#include <iostream>
-#include "../nlohmann/json.hpp"
 #include "../config/Settings.h"
 #include "../network/https_client.h"
+#include "../nlohmann/json.hpp"
+#include "../tools/logging.hpp"
 
 class SettingsLoadException final : public std::runtime_error {
 public:
@@ -52,7 +52,8 @@ public:
         try {
             _data = client.get(); // Fetch the data
         } catch (const FetchingProfileException& e) {
-            std::cerr << "Error fetching profile: " << e.what() << "\n";
+            Logging::error("Error fetching profile: ");
+            Logging::error(e.what());
         }
     }
 

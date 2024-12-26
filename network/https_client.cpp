@@ -15,7 +15,15 @@ void HTTPSClient::setHost(const std::string_view h) {
     } else {
         host = h;
     }
+
+    // Remove any trailing slashes
+    if (!host.empty() && host.back() == '/') {
+        host.pop_back();
+    }
+
+    Logging::debug("Host set to: " + host);
 }
+
 void HTTPSClient::setEndpoint(const std::string_view ep) { endpoint = ep; }
 void HTTPSClient::setBearerToken(const std::string_view token) { bearerToken = token; }
 void HTTPSClient::addQueryParam(const std::string_view key, const std::string_view value) {
@@ -26,9 +34,9 @@ void HTTPSClient::addQueryParam(const std::string_view key, const std::string_vi
 std::string HTTPSClient::constructUrl() const {
     std::ostringstream urlStream;
 
-    // Ensure the host and endpoint are combined correctly.
-    // Assuming `endpoint` is relative, prepend `host` if needed.
-    urlStream << host << endpoint;
+    // Ensure the URL starts with https://
+    urlStream << "https://" << host << endpoint;
+
     if (!queryParams.empty()) {
         urlStream << "?";
         for (auto it = queryParams.begin(); it != queryParams.end(); ++it) {
@@ -40,6 +48,8 @@ std::string HTTPSClient::constructUrl() const {
                       << httplib::detail::encode_url(it->second);
         }
     }
+
+    Logging::debug("Constructed URL: " + urlStream.str());
     return urlStream.str();
 }
 
@@ -50,25 +60,25 @@ nlohmann::json HTTPSClient::get() const {
         return {};
     }
 
-    httplib::SSLClient client(host);  // Use SSL client for HTTPS
+    httplib::SSLClient client(host, 443);
     client.set_follow_location(true); // Follow redirects automatically
-
-    const std::string constructedUrl = constructUrl();
 
     // Set headers
     httplib::Headers headers;
     headers.insert({"Accept", "application/json"});
-    headers.insert({"Content-Type", "application/json"});
     if (!bearerToken.empty()) {
         headers.insert({"Authorization", "Bearer " + bearerToken});
     }
 
     // Perform the GET request
-    auto res = client.Get(constructedUrl, headers);
+    auto res = client.Get(constructUrl(), headers);
 
     // Check response status
     if (!res || res->status != 200) {
         Logging::error("HTTP GET failed with status: " + (res ? std::to_string(res->status) : "No response"));
+        if (res) {
+            Logging::error("Response body: " + res->body);
+        }
         for (const auto& [key, value] : queryParams) {
             Logging::debug("Query Param: " + key + " = " + value);
         }
